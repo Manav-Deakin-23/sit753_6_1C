@@ -1,3 +1,9 @@
+Task 6.1C
+Jenkins File
+
+/*This pipeline is specially designed for the game's design in the unity 3D game engine.
+It is a simple pipeline demonstrating the stages involved in developing and deploying a Unity game.
+*/
 pipeline 
 {
     agent any
@@ -100,7 +106,7 @@ pipeline
 
 def EmailNotification (stageName) 
 {
-    def recipient = 'manavmehta0226@gmail.com'
+    def recipient = 'wendyapiyo@gmail.com'
     def subject = "Jenkins Stage: ${stageName}"
     def body = "The '${stageName}' stage finished success"
     def logFile = currentBuild.rawBuild.getLogFile()
@@ -110,3 +116,5 @@ def EmailNotification (stageName)
     subject: subject, 
     body: emailBody
 }
+
+//friend
