@@ -1,120 +1,93 @@
-Task 6.1C
-Jenkins File
-
-/*This pipeline is specially designed for the game's design in the unity 3D game engine.
-It is a simple pipeline demonstrating the stages involved in developing and deploying a Unity game.
-*/
-pipeline 
-{
+pipeline {
     agent any
-        stages 
-            {
-                stage('Build') 
-                    {
-                        steps 
-                            {
-                                echo 'Task: Build the Unity project.'
-                                echo 'Tool: Unity command line interface.'
-                            }
-                    }
-            
-                stage('Unit and Integration Tests') 
-                    {
-                        steps 
-                            {
-                                echo 'Task: Run unit tests and integration tests.'
-                                echo 'Tool: Unity Test Runner.'
-                            }   
-                    }
-            
-                stage('Code Analysis') 
-                    {
-                        steps 
-                            {
-                                echo 'Task: Analyse the code to ensure it meets industry standards.'
-                                echo 'Tool: SonarQube.'
-                            }
-                    }
-                stage('Security Scan') 
-                    {
-                        steps 
-                            {
-                                echo 'Task: Perform a security scan on the code to identify any vulnerabilities.'
-                                echo 'Tool: OWASP Dependency-Check.'
-                            }
-                        post 
-                            {
-                                success 
-                                        {
-                                            script
-                                                {
-                                                    EmailNotification (env.STAGE_NAME);
-                                                }                                         
-                                        }
-                                failure 
-                                        {
-                                            script
-                                                {
-                                                    EmailNotification (env.STAGE_NAME);
-                                                }
-                                        }
-                            }
-                    }
-                stage('Deploy to Staging') 
-                    {
-                        steps 
-                            {
-                                echo 'Task: Deploy the game to a staging server or a test environment.'
-                                echo 'Tool: AWS CLI.'
-                            }
-                    }
-                stage('Integration Tests on Staging') 
-                    {
-                        steps 
-                            {
-                                echo 'Task: Run integration tests on the staging environment.'
-                                echo 'Tool: Unity Test Runner.'
-                            }
-                        post 
-                            {
-                                success 
-                                        {
-                                            script
-                                                {
-                                                    EmailNotification (env.STAGE_NAME);
-                                                }
-                                        }                           
-                                failure 
-                                        {
-                                            script
-                                                {
-                                                    EmailNotification (env.STAGE_NAME);
-                                                }
-                                        }
-                            }
-                    }
-                stage('Deploy to Production') 
-                    {
-                        steps 
-                            {
-                                echo 'Task: Deploy the game to a production server or publish it to a platform (e.g., Google Play Store, Apple App Store).'
-                                echo 'Tool: Fastlane or similar.'
-                            }
-                    }
+    
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Task: Build the Unity project.'
+                echo 'Tool: Unity command line interface.'
             }
+        }
+        
+        stage('Unit and Integration Tests') {
+            steps {
+                echo 'Task: Run unit tests and integration tests.'
+                echo 'Tool: Unity Test Runner.'
+            }   
+        }
+        
+        stage('Code Analysis') {
+            steps {
+                echo 'Task: Analyse the code to ensure it meets industry standards.'
+                echo 'Tool: SonarQube.'
+            }
+        }
+        
+        stage('Security Scan') {
+            steps {
+                echo 'Task: Perform a security scan on the code to identify any vulnerabilities.'
+                echo 'Tool: OWASP Dependency-Check.'
+            }
+            post {
+                always {
+                    script {
+                        def lFile = 'test.txt'
+                        writeFile file: lFile, text: currentBuild.rawBuild.getLog(1000).join("\n")
+                        archiveArtifacts artifacts: lFile, allowEmptyArchive: true
+                        emailext(
+                            to: 'qwertyorg2@gmail.com',
+                            subject: "Tests have Succeeded: ${currentBuild.fullDisplayName}",
+                            body: "The tests stage has succeeded. Logs are attached.",
+                            attachmentsPattern: lFile
+                        )
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to Staging') {
+            steps {
+                echo 'Task: Deploy the game to a staging server or a test environment.'
+                echo 'Tool: AWS CLI.'
+            }
+        }
+        
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Task: Run integration tests on the staging environment.'
+                echo 'Tool: Unity Test Runner.'
+            }
+            post {
+                success {
+                    script {
+                        EmailNotification(env.STAGE_NAME)
+                    }
+                }
+                failure {
+                    script {
+                        EmailNotification(env.STAGE_NAME)
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy to Production') {
+            steps {
+                echo 'Task: Deploy the game to a production server or publish it to a platform (e.g., Google Play Store, Apple App Store).'
+                echo 'Tool: Fastlane or similar.'
+            }
+        }
+    }
 }
 
-def EmailNotification (stageName) 
-{
-    def recipient = 'wendyapiyo@gmail.com'
+def EmailNotification(stageName) {
+    def recipient = 'manavmehta0226@gmail.com'
     def subject = "Jenkins Stage: ${stageName}"
-    def body = "The '${stageName}' stage finished success"
+    def body = "The '${stageName}' stage finished successfully."
     def logFile = currentBuild.rawBuild.getLogFile()
     def logContent = readFile(logFile.toString())
     def emailBody = "${body}\nbuild log:\n${logContent}"
     mail to: recipient, 
-    subject: subject, 
-    body: emailBody
+         subject: subject, 
+         body: emailBody
 }
-
-//friend
