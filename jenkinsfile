@@ -57,18 +57,21 @@ pipeline {
                 echo 'Tool: Unity Test Runner.'
             }
             post {
-                success {
+                always {
                     script {
-                        EmailNotification(env.STAGE_NAME)
-                    }
-                }
-                failure {
-                    script {
-                        EmailNotification(env.STAGE_NAME)
+                        def lFile = 'test.txt'
+                        writeFile file: lFile, text: currentBuild.rawBuild.getLog(1000).join("\n")
+                        archiveArtifacts artifacts: lFile, allowEmptyArchive: true
+                        emailext(
+                            to: 'manavmehta0226@gmail.com',
+                            subject: "Tests have Succeeded: ${currentBuild.fullDisplayName}",
+                            body: "The tests stage has succeeded. Logs are attached.",
+                            attachmentsPattern: lFile
+                        )
                     }
                 }
             }
-        }
+
         
         stage('Deploy to Production') {
             steps {
@@ -77,16 +80,4 @@ pipeline {
             }
         }
     }
-}
-
-def EmailNotification(stageName) {
-    def recipient = 'manavmehta0226@gmail.com'
-    def subject = "Jenkins Stage: ${stageName}"
-    def body = "The '${stageName}' stage finished successfully."
-    def logFile = currentBuild.rawBuild.getLogFile()
-    def logContent = readFile(logFile.toString())
-    def emailBody = "${body}\nbuild log:\n${logContent}"
-    mail to: recipient, 
-         subject: subject, 
-         body: emailBody
 }
