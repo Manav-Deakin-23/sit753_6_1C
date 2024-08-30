@@ -35,7 +35,7 @@ pipeline {
                         writeFile file: lFile, text: currentBuild.rawBuild.getLog(1000).join("\n")
                         archiveArtifacts artifacts: lFile, allowEmptyArchive: true
                         emailext(
-                            to: 'qwertyorg2@gmail.com',
+                            to: 'manavmehta0226@gmail.com',
                             subject: "Tests have Succeeded: ${currentBuild.fullDisplayName}",
                             body: "The tests stage has succeeded. Logs are attached.",
                             attachmentsPattern: lFile
@@ -43,7 +43,6 @@ pipeline {
                     }
                 }
             }
-        }
 
         stage('Deploy to Staging') {
             steps {
