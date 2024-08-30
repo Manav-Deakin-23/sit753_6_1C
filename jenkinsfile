@@ -33,7 +33,7 @@ pipeline {
             post {
                 always {
                     script {
-                        def lFile = 'test.txt'
+                        def lFile = 'scan.txt'
                         writeFile file: lFile, text: currentBuild.rawBuild.getLog(1000).join("\n")
                         archiveArtifacts artifacts: lFile, allowEmptyArchive: true
                         emailext(
@@ -62,7 +62,7 @@ pipeline {
             post {
                 always {
                     script {
-                        def lFile = 'test.txt'
+                        def lFile = 'scan.txt'
                         writeFile file: lFile, text: currentBuild.rawBuild.getLog(1000).join("\n")
                         archiveArtifacts artifacts: lFile, allowEmptyArchive: true
                         emailext(
