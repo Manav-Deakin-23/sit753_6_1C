@@ -5,8 +5,8 @@ pipeline {
         stage('Build') {
             steps {
                 script { 
-                echo 'Task: Build the Unity project.'
-                echo 'Tool: Unity command line interface.'
+                    echo 'Task: Build the Unity project.'
+                    echo 'Tool: Unity command line interface.'
                 }
             }
         }
@@ -38,14 +38,14 @@ pipeline {
                         archiveArtifacts artifacts: lFile, allowEmptyArchive: true
                         emailext(
                             to: 'manavmehta0226@gmail.com',
-                            subject: "Tests have Succeeded: ${currentBuild.fullDisplayName}",
-                            body: "The tests stage has succeeded. Logs are attached.",
+                            subject: "Security Scan Completed: ${currentBuild.fullDisplayName}",
+                            body: "The security scan has completed. Logs are attached.",
                             attachmentsPattern: lFile
                         )
                     }
                 }
             }
-}
+        }
 
         stage('Deploy to Staging') {
             steps {
@@ -67,15 +67,14 @@ pipeline {
                         archiveArtifacts artifacts: lFile, allowEmptyArchive: true
                         emailext(
                             to: 'manavmehta0226@gmail.com',
-                            subject: "Tests have Succeeded: ${currentBuild.fullDisplayName}",
-                            body: "The tests stage has succeeded. Logs are attached.",
+                            subject: "Integration Tests on Staging Completed: ${currentBuild.fullDisplayName}",
+                            body: "The integration tests on staging have completed. Logs are attached.",
                             attachmentsPattern: lFile
                         )
                     }
                 }
             }
-}
-
+        }
         
         stage('Deploy to Production') {
             steps {
@@ -84,3 +83,4 @@ pipeline {
             }
         }
     }
+}
