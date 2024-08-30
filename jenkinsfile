@@ -4,8 +4,10 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                script { 
                 echo 'Task: Build the Unity project.'
                 echo 'Tool: Unity command line interface.'
+                }
             }
         }
         
@@ -43,6 +45,7 @@ pipeline {
                     }
                 }
             }
+}
 
         stage('Deploy to Staging') {
             steps {
@@ -71,6 +74,7 @@ pipeline {
                     }
                 }
             }
+}
 
         
         stage('Deploy to Production') {
@@ -80,4 +84,3 @@ pipeline {
             }
         }
     }
-}
